@@ -1,0 +1,6 @@
+. mainWindow {
+    -fx-background-color: #ADD8E6;
+    -fx-background-image: url("/easv/intgrpmovie/View/Pictures/background2.jpg"); /* Calea către imagine */
+    -fx-background-size: cover; /* Asigură-te că imaginea acoperă tot panoul */
+    -fx-background-position: center center; /* Poziționează imaginea la mijloc */
+}
