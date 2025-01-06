@@ -22,13 +22,6 @@ public class HelloApplication extends Application {
 
     public class Main {
         public static void main(String[] args) {
-            try (Connection connection = DBConnection.getConnection()) {
-                if (connection != null) {
-                    System.out.println("Connected to the database successfully!");
-                }
-            } catch (SQLException e) {
-                System.err.println("Database connection failed: " + e.getMessage());
-            }
         }
     }
 }
