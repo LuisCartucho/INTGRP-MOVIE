@@ -1,4 +1,4 @@
-package easv.intgrpmovie;
+package easv.intgrpmovie.gui.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

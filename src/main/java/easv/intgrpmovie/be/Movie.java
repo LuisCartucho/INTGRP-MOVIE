@@ -1,6 +1,6 @@
 package easv.intgrpmovie.be;
 
-public class Movies {
+public class Movie {
     private int id;
     private String name;
     private int rating;
@@ -8,7 +8,7 @@ public class Movies {
     private String lastView;
 
 
-    public Movies(int id, String name, int rating, String filelink, String lastView) {
+    public Movie(int id, String name, int rating, String filelink, String lastView) {
         this.id = id;
         this.name = name;
         this.rating = rating;
@@ -27,7 +27,6 @@ public class Movies {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="695.0" styleClass="mainWindow" stylesheets="@View/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="695.0" styleClass="mainWindow" stylesheets="@View/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.gui.controller.HelloController">
    <children>
       <ListView fx:id="category" opacity="0.65" prefHeight="288.0" prefWidth="200.0" />
       <ListView fx:id="movieCategoriesList" layoutX="200.0" opacity="0.65" prefHeight="288.0" prefWidth="200.0" />
