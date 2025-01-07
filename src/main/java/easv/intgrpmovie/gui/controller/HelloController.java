@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
@@ -21,6 +22,9 @@ public class HelloController implements Initializable {
 
     @FXML
     private ListView<String> movieCategoriesList;
+
+    @FXML
+    private ComboBox<String> genreComboBox;
 
     public void btnaddMovie(ActionEvent actionEvent) {
         try {
@@ -52,11 +56,13 @@ public class HelloController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-               // Adaugăm categoriile de filme în ListView
+        // Adaugăm categoriile de filme în ListView
         movieCategoriesList.getItems().addAll(
                 "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
         );
         category.getItems().addAll("Movie");
     }
 }
+
+
 

@@ -26,7 +26,7 @@
       </Label>
       <TextField layoutX="112.0" layoutY="77.0" prefHeight="26.0" prefWidth="238.0" />
       <TextField layoutX="111.0" layoutY="164.0" prefHeight="26.0" prefWidth="150.0" />
-      <ComboBox layoutX="112.0" layoutY="116.0" prefHeight="26.0" prefWidth="150.0" />
+      <ComboBox fx:id="genreComboBox" layoutX="112.0" layoutY="116.0" prefHeight="26.0" prefWidth="150.0" />
       <Button layoutX="285.0" layoutY="207.0" mnemonicParsing="false" text="Choose" />
       <Label layoutX="56.0" layoutY="206.0" text="File:">
          <font>
