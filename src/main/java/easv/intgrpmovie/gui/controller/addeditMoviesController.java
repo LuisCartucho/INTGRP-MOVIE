@@ -247,6 +247,8 @@ public class addeditMoviesController {
                 "Western"
         );
 
+
+
        /** // Example of how you might handle movie selection:
         movieListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Double-click to view the movie

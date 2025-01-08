@@ -1,8 +1,8 @@
 package easv.intgrpmovie.gui.controller;
 
 import easv.intgrpmovie.HelloApplication;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import easv.intgrpmovie.be.Category;
+import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,22 +12,23 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
+import javax.imageio.spi.ServiceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class HelloController implements Initializable {
+public class MyMoviesController implements Initializable {
 
     @FXML
-    private ListView<String> movieCategoriesList; // Middle ListView (categories)
+    private ListView<String> lstViewMain; // Middle ListView (categories)
 
     @FXML
-    private ListView<String> category;
+    private ListView<String> lstViewcategory;
 
+    private CategoryModel categoryModel = new CategoryModel();
     @FXML
     private ListView<String> lstViewMovie; // Right ListView (media files)
 
@@ -70,18 +71,22 @@ public class HelloController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Add movie categories to the middle ListView
-        movieCategoriesList.getItems().addAll(
-                "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
-        );
+        // Fetch categories from the model
+        List<Category> categories = categoryModel.getCategory();
+
+        // Populate the ListView with category names
+        for (Category cat : categories) {
+            lstViewcategory.getItems().add(cat.getName());
+        }
 
         // Set up listener for category selection
-        movieCategoriesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        lstViewcategory.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 updateMediaList(newValue); // Update right ListView when a category is selected
             }
         });
 
-        category.getItems().addAll("Movie");
+        lstViewMain.getItems().addAll("Movie");
     }
 
 
@@ -113,6 +118,5 @@ public class HelloController implements Initializable {
         }
     }
 }
-
 
 
