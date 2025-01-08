@@ -24,8 +24,8 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="112.0" layoutY="77.0" prefHeight="26.0" prefWidth="238.0" />
-      <TextField layoutX="111.0" layoutY="164.0" prefHeight="26.0" prefWidth="150.0" />
+      <TextField fx:id="txtFieldTitle" layoutX="112.0" layoutY="77.0" prefHeight="26.0" prefWidth="238.0" />
+      <TextField fx:id="txtFieldRating" layoutX="111.0" layoutY="164.0" prefHeight="26.0" prefWidth="150.0" />
       <ComboBox fx:id="genreComboBox" layoutX="112.0" layoutY="116.0" prefHeight="26.0" prefWidth="150.0" />
       <Button fx:id="chooseButton" layoutX="285.0" layoutY="207.0" mnemonicParsing="false" onAction="#handleChooseFile" text="Choose" />
       <Label layoutX="56.0" layoutY="206.0" text="File:">
@@ -33,8 +33,8 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="txtFilePath" layoutX="111.0" layoutY="207.0" />
+      <TextField fx:id="txtFieldFile" layoutX="111.0" layoutY="207.0" />
       <Button layoutX="236.0" layoutY="263.0" mnemonicParsing="false" text="Cancel" />
-      <Button layoutX="300.0" layoutY="263.0" mnemonicParsing="false" text="Save" />
+      <Button fx:id="btnSave" layoutX="300.0" layoutY="263.0" mnemonicParsing="false" text="Save" />
    </children>
 </AnchorPane>
