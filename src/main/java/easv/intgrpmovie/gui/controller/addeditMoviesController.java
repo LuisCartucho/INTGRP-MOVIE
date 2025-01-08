@@ -185,7 +185,7 @@ public class addeditMoviesController {
 
         // Optionally, you can filter file types (e.g., image files, text files)
         FileChooser.ExtensionFilter extensionFilter =
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif");
+                new FileChooser.ExtensionFilter("Movies", "*.mp4", "*.mpeg4");
         fileChooser.getExtensionFilters().add(extensionFilter);
 
         // Open the file chooser and capture the file selected
