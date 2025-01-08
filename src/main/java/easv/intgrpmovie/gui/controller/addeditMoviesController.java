@@ -50,52 +50,133 @@ public class addeditMoviesController {
 
 
     private void saveMovie() {
+
         // Get input values from the UI
         String title = txtFieldTitle.getText();
-        int rating = Integer.parseInt(txtFieldRating.getText().trim()); // Parse text to int
+        String ratingText = txtFieldRating.getText().trim();
         String fileLink = txtFieldFile.getText();
 
-        // Use LocalDate for lastView (the default date)
-        LocalDate lastView = LocalDate.of(2000, 12, 1);  // Default date: 2000-12-01
+        if (title.isEmpty()) {
+            showError("Title cannot be empty.");
+            return;
+        }
 
-        // If you have a DatePicker for the user to choose a date:
-        // LocalDate lastView = datePicker.getValue(); // If using a DatePicker component
+        if (ratingText.isEmpty()) {
+            showError("Rating cannot be empty.");
+            return;
+        }
 
-        // SQL query to insert the data
-        String query = "INSERT INTO Movie (name, rating, filelink, lastview) VALUES (?, ?, ?, ?)";
+        int rating;
+        try {
+            rating = Integer.parseInt(ratingText); // Parse text to int
+        } catch (NumberFormatException e) {
+            showError("Rating must be an integer.");
+            return;
+        }
+
+        if (fileLink.isEmpty()) {
+            showError("File link cannot be empty.");
+            return;
+        }
+
+        // Get the selected category from the ComboBox
+        String selectedCategory = genreComboBox.getValue();
+        if (selectedCategory == null) {
+            showError("Please select a category.");
+            return;
+        }
+
+        // Convert LocalDate for lastView (default date or current date)
+        LocalDate lastView = LocalDate.now();  // Current date
+
+        // SQL query to insert the movie into the Movie table
+        String insertMovieQuery = "INSERT INTO Movie (name, rating, filelink, lastview) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = C.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(query)) {
+             PreparedStatement pstmt = connection.prepareStatement(insertMovieQuery, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Set the parameters
+            // Set the parameters for the movie
             pstmt.setString(1, title);
             pstmt.setInt(2, rating);
             pstmt.setString(3, fileLink);
-
-            // Convert LocalDate to java.sql.Date and set it
             pstmt.setDate(4, Date.valueOf(lastView));
 
-            // Execute the update
+            // Execute the update to insert the movie
             pstmt.executeUpdate();
-            System.out.println("Movie saved successfully!");
+
+            // Get the generated movieId (the ID of the movie just inserted)
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int movieId = generatedKeys.getInt(1);
+                System.out.println("Movie saved with ID: " + movieId);
+
+                // Now, insert the relationship into the CatMovie table
+                insertMovieCategory(movieId, selectedCategory, connection);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            showError("Database error: " + e.getMessage());
         }
-        catch (NumberFormatException e) {
-        // Handle invalid rating input
-        System.err.println("Invalid rating: " + txtFieldRating.getText());
-        showError("Rating must be an integer."); // Optionally show a dialog to the user
     }
 
-}
+    private void insertMovieCategory(int movieId, String selectedCategory, Connection connection) {
+        // SQL query to insert the relationship into the CatMovie table
+        String insertCategoryQuery = "INSERT INTO CatMovie (movieId, categoryId) VALUES (?, ?)";
 
-        // Method to show an error message (optional, based on your implementation)
-    private void showError(String message) {
-        // Here you could show an error dialog, for now, it's just a print statement
-    System.err.println("Error: " + message);
-}
+        // Get the categoryId based on the selected category
+        int categoryId = getCategoryId(selectedCategory, connection);
 
+        if (categoryId != -1) {
+            try (PreparedStatement pstmt = connection.prepareStatement(insertCategoryQuery)) {
+                // Set the parameters for the relationship
+                pstmt.setInt(1, movieId);      // movieId
+                pstmt.setInt(2, categoryId);   // categoryId
+
+                // Execute the update to insert the relationship
+                pstmt.executeUpdate();
+                System.out.println("Category relationship added for movie ID: " + movieId);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showError("Error inserting category relationship: " + e.getMessage());
+            }
+        } else {
+            showError("Invalid category selected.");
+        }
+    }
+
+    private int getCategoryId(String categoryName, Connection connection) {
+        // SQL query to get the categoryId based on the category name
+        String query = "SELECT id FROM Category WHERE name = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, categoryName);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id"); // Return the category ID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;  // Return -1 if the category doesn't exist
+    }
+
+    public void showError(String message) {
+        // Create an alert of type ERROR
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        // Set the title and header for the alert
+        alert.setTitle("Error");
+        alert.setHeaderText("An error occurred");
+
+        // Set the content of the alert with the error message
+        alert.setContentText(message);
+
+        // Show the alert and wait for the user to close it
+        alert.showAndWait();
+    }
 
     @FXML
     private void handleChooseFile() {
