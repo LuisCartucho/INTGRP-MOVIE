@@ -2,10 +2,7 @@ package easv.intgrpmovie.dal;
 
 import easv.intgrpmovie.be.Category;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,4 +52,24 @@ public class CategoryDAO {
             stmnt.executeUpdate();
         }
     }
+
+
+
+    public List<String> getCategoryNames() {
+        List<String> categoryNames = new ArrayList<>();
+        String query = "SELECT name FROM Category";
+
+        try (Connection connection = conn.getConnection();
+             Statement stmt = connection.createStatement()) {
+
+            ResultSet resultSet = stmt.executeQuery(query);
+            while (resultSet.next()) {
+                categoryNames.add(resultSet.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categoryNames;
+    }
 }
+

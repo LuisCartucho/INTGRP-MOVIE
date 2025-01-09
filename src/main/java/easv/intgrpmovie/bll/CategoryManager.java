@@ -12,4 +12,9 @@ public class CategoryManager {
         List<Category> categories = categoryDAO.getCategory();
         return categories;
     }
+
+    public List<String> getCategoryNames() {
+        return categoryDAO.getCategoryNames();
+    }
 }
+

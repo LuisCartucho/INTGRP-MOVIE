@@ -2,7 +2,11 @@ package easv.intgrpmovie.gui.controller;
 
 import easv.intgrpmovie.MyMoviesApplication;
 import easv.intgrpmovie.be.Category;
+import easv.intgrpmovie.bll.CatMovieManager;
+import easv.intgrpmovie.dal.DBConnection;
 import easv.intgrpmovie.gui.model.CategoryModel;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +19,10 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -22,17 +30,24 @@ import java.util.ResourceBundle;
 public class MyMoviesController implements Initializable {
 
     @FXML
-    private ListView<String> lstViewMain; // Middle ListView (categories)
+    private ListView<String> lstViewMain; // Left ListView (categories)
 
     @FXML
-    private ListView<String> lstViewcategory;
+    private ListView<String> lstViewcategory; // Middle ListView (categories)
 
-    private CategoryModel categoryModel = new CategoryModel();
     @FXML
     private ListView<String> lstViewMovie; // Right ListView (media files)
 
     @FXML
     private ComboBox<String> genreComboBox; // Not used for now
+
+    private CategoryModel categoryModel = new CategoryModel();
+    private CatMovieManager catMovieManager;
+
+    // Constructor no longer needed since FXML injection will handle it
+    public MyMoviesController() {
+        this.catMovieManager = new CatMovieManager(); // Initialize the manager here
+    }
 
     // Path to the media folder (relative path from project root)
     private final String mediaPath = "media";
@@ -41,7 +56,6 @@ public class MyMoviesController implements Initializable {
     public void btnaddMovie(ActionEvent actionEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
-
             Stage stage = new Stage();
             Scene scene = new Scene(fxmlLoader.load());
             stage.setTitle("Add Movie");
@@ -56,7 +70,6 @@ public class MyMoviesController implements Initializable {
     public void btnEditMovie(ActionEvent actionEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
-
             Stage stage = new Stage();
             Scene scene = new Scene(fxmlLoader.load());
             stage.setTitle("Edit Movie");
@@ -88,31 +101,16 @@ public class MyMoviesController implements Initializable {
         lstViewMain.getItems().addAll("Movie");
     }
 
+    public void updateMediaList(String categoryName) {
+        // Fetch the list of movies from the CatMovieManager
+        List<String> movieDetails = catMovieManager.getMoviesByCategory(categoryName);
 
-    private void updateMediaList(String categoryName) {
-        // Initialize a list to hold media files
-        List<String> mediaFiles = new ArrayList<>();
+        // Update the ListView in the UI with the fetched movie details
+        ObservableList<String> observableList = FXCollections.observableArrayList(movieDetails);
+        lstViewMovie.setItems(observableList);
 
-        // Retrieve all files from the media directory
-        File mediaDirectory = new File("src/main/resources/media");
-        if (mediaDirectory.exists() && mediaDirectory.isDirectory()) {
-            String[] allFiles = mediaDirectory.list((dir, name) -> name.endsWith(".mp4"));
-
-            // Simulate filtering files based on the selected category (e.g., category prefix)
-            if (allFiles != null) {
-                for (String file : allFiles) {
-                    if (file.toLowerCase().contains(categoryName.toLowerCase())) {
-                        mediaFiles.add(file);
-                    }
-                }
-            }
-        }
-
-        // Update the right ListView (lstViewMovie) with the filtered media files
-        lstViewMovie.getItems().clear();
-        if (!mediaFiles.isEmpty()) {
-            lstViewMovie.getItems().addAll(mediaFiles);
-        } else {
+        // If no movies were found for the category, display a default message
+        if (movieDetails.isEmpty()) {
             lstViewMovie.getItems().add("No media files found for " + categoryName);
         }
     }
