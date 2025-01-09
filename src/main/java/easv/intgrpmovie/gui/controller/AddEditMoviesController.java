@@ -99,11 +99,11 @@ public class AddEditMoviesController {
         String fileExtension = getFileExtension(sourceFile);  // Get the file extension
         Path targetFile = mediaDir.resolve(title + fileExtension); // Save with title as filename
 
-        // Move the file to the media directory
+        // Copy the file to the media directory
         try {
-            Files.move(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING); // Replace if file exists
+            Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING); // Replace if file exists
         } catch (IOException e) {
-            showError("Error moving the file to the media directory.");
+            showError("Error copying the file to the media directory.");
             return;
         }
 
@@ -111,7 +111,7 @@ public class AddEditMoviesController {
 
         try {
             // Insert movie and get movieId
-            int movieId = movieDAO.insertMovie(title, rating, fileLink, Date.valueOf(lastView));
+            int movieId = movieDAO.insertMovie(title, rating, targetFile.toString(), Date.valueOf(lastView));
 
             if (movieId != -1) {
                 // Get categoryId
@@ -143,7 +143,7 @@ public class AddEditMoviesController {
         }
     }
 
-    private void showError (String message) {
+    private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("An error occurred");
@@ -151,8 +151,13 @@ public class AddEditMoviesController {
         alert.showAndWait();
     }
 
-
-
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Operation Successful");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     @FXML
     private void handleChooseFile() {
@@ -174,7 +179,8 @@ public class AddEditMoviesController {
         genreComboBox.getItems().addAll(
                 "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
         );
-
+    }
+}
         /*
         //Example of how you might handle movie selection
         movieListView.setOnMouseClicked(event -> {
@@ -188,5 +194,5 @@ public class AddEditMoviesController {
         });
         */
 
-    }
-}
+
+
