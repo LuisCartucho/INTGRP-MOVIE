@@ -2,10 +2,7 @@ package easv.intgrpmovie.dal;
 
 import easv.intgrpmovie.be.Movie;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +31,32 @@ public class MovieDAO {
             throw new RuntimeException(e);
         }
         return movies;
+    }
+
+    public int insertMovie(String title, int rating, String fileLink, Date lastView) throws SQLException {
+        String insertMovieQuery = "INSERT INTO Movie (name, rating, fileLink, lastView) VALUES (?, ?, ?, ?)";
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmnt = c.prepareStatement(insertMovieQuery, Statement.RETURN_GENERATED_KEYS)) {
+            stmnt.setString(1, title);
+            stmnt.setInt(2, rating);
+            stmnt.setString(3, fileLink);
+            stmnt.setDate(4, lastView);
+            stmnt.executeUpdate();
+            ResultSet generatedKeys = stmnt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);  // Return the generated movieId
+            }
+        }
+        return -1;  // In case movie was not inserted
+    }
+
+    public void updateLastView(int movieId, Date lastView) throws SQLException {
+        String updateLastViewQuery = "UPDATE Movie SET lastView = ? WHERE id = ?";
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmnt = c.prepareStatement(updateLastViewQuery)) {
+            stmnt.setDate(1, lastView);
+            stmnt.setInt(2, movieId);
+            stmnt.executeUpdate();
+        }
     }
 }

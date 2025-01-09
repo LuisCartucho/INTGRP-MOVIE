@@ -32,4 +32,27 @@ public class CategoryDAO {
         }
         return categories;
     }
+
+    public int getCategoryId(String categoryName) throws SQLException {
+        String query = "SELECT id FROM Category WHERE name = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(query)) {
+            stmnt.setString(1, categoryName);
+            ResultSet rs = stmnt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");  // Return the category ID
+            }
+        }
+        return -1;  // Return -1 if the category doesn't exist
+    }
+
+    public void insertMovieCategory(int movieId, int categoryId) throws SQLException {
+        String insertCategoryQuery = "INSERT INTO CatMovie (movieId, categoryId) VALUES (?, ?)";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(insertCategoryQuery)) {
+            stmnt.setInt(1, movieId);      // movieId
+            stmnt.setInt(2, categoryId);   // categoryId
+            stmnt.executeUpdate();
+        }
+    }
 }
