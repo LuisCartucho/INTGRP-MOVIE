@@ -6,16 +6,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class CategoryModel {
-
     private final CategoryManager categoryManager = new CategoryManager();
 
-    private  ObservableList<Category> categoryObservableList = FXCollections.observableArrayList();
+    private ObservableList<Category> movieCategories = FXCollections.observableArrayList();
 
     public CategoryModel() {
-        categoryObservableList.setAll(categoryManager.getCategory());
+        movieCategories.setAll(categoryManager.getCategories());
     }
 
-    public  ObservableList<Category> getCategory() {
-        return categoryObservableList;
-}
+    public ObservableList<Category> getCategory() {
+        return movieCategories;
+    }
 }

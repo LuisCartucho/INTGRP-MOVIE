@@ -8,8 +8,8 @@ import java.util.List;
 public class CategoryManager {
     private final CategoryDAO categoryDAO = new CategoryDAO();
 
-    public List<Category> getCategory() {
-        List<Category> category = categoryDAO.getCategory();
-        return category;
-}
+    public List<Category> getCategories() {
+        List<Category> categories = categoryDAO.getCategory();
+        return categories;
+    }
 }

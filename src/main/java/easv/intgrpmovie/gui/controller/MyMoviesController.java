@@ -1,6 +1,6 @@
 package easv.intgrpmovie.gui.controller;
 
-import easv.intgrpmovie.HelloApplication;
+import easv.intgrpmovie.MyMoviesApplication;
 import easv.intgrpmovie.be.Category;
 import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.event.ActionEvent;
@@ -12,7 +12,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
-import javax.imageio.spi.ServiceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +40,7 @@ public class MyMoviesController implements Initializable {
     // Button to open Add Movie dialog
     public void btnaddMovie(ActionEvent actionEvent) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-removeMovies.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
 
             Stage stage = new Stage();
             Scene scene = new Scene(fxmlLoader.load());
@@ -56,7 +55,7 @@ public class MyMoviesController implements Initializable {
     // Button to open Edit Movie dialog
     public void btnEditMovie(ActionEvent actionEvent) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-removeMovies.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
 
             Stage stage = new Stage();
             Scene scene = new Scene(fxmlLoader.load());

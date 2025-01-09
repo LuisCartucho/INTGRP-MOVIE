@@ -1,6 +1,5 @@
 package easv.intgrpmovie.gui.controller;
 
-import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.dal.DBConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,40 +16,28 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 
-
-public class addeditMoviesController {
+public class AddEditMoviesController {
 
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("add-removeMovies.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("add-edit-movies.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("Add/Edit Movie");
         stage.setScene(scene);
         stage.show();
     }
 
     @FXML
-    private Button chooseButton;
+    private Button chooseButton, btnSave;
 
     @FXML
     private ComboBox<String> genreComboBox;
 
     @FXML
-    private TextField txtFieldTitle;
-
-    @FXML
-    private TextField txtFieldRating;
-
-    @FXML
-    private TextField txtFieldFile;
-
-    @FXML
-    private Button btnSave;
+    private TextField txtFieldTitle, txtFieldRating, txtFieldFile;
 
     DBConnection C = new DBConnection();
 
-
     private void saveMovie() {
-
         // Get input values from the UI
         String title = txtFieldTitle.getText();
         String ratingText = txtFieldRating.getText().trim();
@@ -87,33 +74,25 @@ public class addeditMoviesController {
         }
 
         // Convert LocalDate for lastView (default date or current date)
-        LocalDate lastView = LocalDate.now();  // Current date
+        LocalDate lastView = LocalDate.now(); // Current date
 
         // SQL query to insert the movie into the Movie table
         String insertMovieQuery = "INSERT INTO Movie (name, rating, filelink, lastview) VALUES (?, ?, ?, ?)";
-
         try (Connection connection = C.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(insertMovieQuery, Statement.RETURN_GENERATED_KEYS)) {
-
-            // Set the parameters for the movie
             pstmt.setString(1, title);
             pstmt.setInt(2, rating);
             pstmt.setString(3, fileLink);
             pstmt.setDate(4, Date.valueOf(lastView));
-
-            // Execute the update to insert the movie
-            pstmt.executeUpdate();
+            pstmt.executeUpdate(); // Execute the update to insert the movie
 
             // Get the generated movieId (the ID of the movie just inserted)
             ResultSet generatedKeys = pstmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int movieId = generatedKeys.getInt(1);
                 System.out.println("Movie saved with ID: " + movieId);
-
-                // Now, insert the relationship into the CatMovie table
-                insertMovieCategory(movieId, selectedCategory, connection);
+                insertMovieCategory(movieId, selectedCategory, connection); // Now, insert the relationship into the CatMovie table
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Database error: " + e.getMessage());
@@ -247,9 +226,8 @@ public class addeditMoviesController {
                 "Western"
         );
 
-
-
-       /** // Example of how you might handle movie selection:
+        /*
+        //Example of how you might handle movie selection
         movieListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Double-click to view the movie
                 Movie selectedMovie = movieListView.getSelectionModel().getSelectedItem();
@@ -259,7 +237,7 @@ public class addeditMoviesController {
                 }
             }
         });
-    }*/
+        */
+
     }
 }
-

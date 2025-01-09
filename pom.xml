@@ -67,7 +67,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>easv.intgrpmovie/easv.intgrpmovie.HelloApplication</mainClass>
+                            <mainClass>easv.intgrpmovie/easv.intgrpmovie.MyMoviesApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

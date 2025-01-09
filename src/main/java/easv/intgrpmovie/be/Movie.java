@@ -1,32 +1,32 @@
 package easv.intgrpmovie.be;
 
 public class Movie {
-    private int id;
+    private int ID;
     private String name;
     private int rating;
-    private String filelink;
+    private String fileLink;
     private String lastView;
 
-
-    public Movie(int id, String name, int rating, String filelink, String lastView) {
-        this.id = id;
+    public Movie(int ID, String name, int rating, String fileLink, String lastView) {
+        this.ID = ID;
         this.name = name;
         this.rating = rating;
-        this.filelink = filelink;
+        this.fileLink = fileLink;
         this.lastView = lastView;
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return ID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -39,12 +39,12 @@ public class Movie {
         this.rating = rating;
     }
 
-    public String getFilelink() {
-        return filelink;
+    public String getFileLink() {
+        return fileLink;
     }
 
-    public void setFilelink(String filelink) {
-        this.filelink = filelink;
+    public void setFileLink(String fileLink) {
+        this.fileLink = fileLink;
     }
 
     public String getLastView() {
@@ -54,4 +54,7 @@ public class Movie {
     public void setLastView(String lastView) {
         this.lastView = lastView;
     }
+
+    @Override
+    public String toString() {return name + ", " + rating + ", " + lastView;}
 }
