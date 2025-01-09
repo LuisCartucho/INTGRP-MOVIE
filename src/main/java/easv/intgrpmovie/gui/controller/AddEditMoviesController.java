@@ -14,6 +14,10 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -75,6 +79,34 @@ public class AddEditMoviesController {
             return;
         }
 
+        // Define the target directory (e.g., "media")
+        Path mediaDir = Paths.get("media");
+
+        // Ensure the media directory exists
+        if (Files.notExists(mediaDir)) {
+            try {
+                Files.createDirectories(mediaDir); // Create the directory if it doesn't exist
+            } catch (IOException e) {
+                showError("Error creating media directory.");
+                return;
+            }
+        }
+
+        // Define the source file and target file path
+        Path sourceFile = Paths.get(fileLink);
+
+        // Use the title for the new file name (and ensure to keep the original file extension)
+        String fileExtension = getFileExtension(sourceFile);  // Get the file extension
+        Path targetFile = mediaDir.resolve(title + fileExtension); // Save with title as filename
+
+        // Move the file to the media directory
+        try {
+            Files.move(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING); // Replace if file exists
+        } catch (IOException e) {
+            showError("Error moving the file to the media directory.");
+            return;
+        }
+
         LocalDate lastView = LocalDate.now(); // Default to current date
 
         try {
@@ -100,13 +132,27 @@ public class AddEditMoviesController {
         }
     }
 
-    private void showError(String message) {
+    // Helper method to get the file extension (e.g., .mp3, .mp4, etc.)
+    private String getFileExtension(Path file) {
+        String fileName = file.getFileName().toString();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            return fileName.substring(dotIndex);  // Returns the extension including the dot (e.g., .mp3, .mp4)
+        } else {
+            return "";  // If no extension, return empty string
+        }
+    }
+
+    private void showError (String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("An error occurred");
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+
+
 
     @FXML
     private void handleChooseFile() {
