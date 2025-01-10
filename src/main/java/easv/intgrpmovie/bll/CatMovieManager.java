@@ -1,5 +1,8 @@
 package easv.intgrpmovie.bll;
 
+import easv.intgrpmovie.be.Movie;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatMovieManager {
@@ -11,11 +14,12 @@ public class CatMovieManager {
         categoryManager = new CategoryManager();
     }
 
-    public List<String> getMoviesByCategory(String categoryName) {
-        return movieManager.getMoviesByCategory(categoryName);
-    }
 
     public List<String> getCategoryNames() {
         return categoryManager.getCategoryNames();
+    }
+
+    public List<Movie> getMoviesByCategory(String categoryName) {
+        return movieManager.getMoviesByCategory(categoryName);
     }
 }

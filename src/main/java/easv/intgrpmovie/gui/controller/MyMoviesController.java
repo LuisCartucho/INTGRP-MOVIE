@@ -2,8 +2,8 @@ package easv.intgrpmovie.gui.controller;
 
 import easv.intgrpmovie.MyMoviesApplication;
 import easv.intgrpmovie.be.Category;
+import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.bll.CatMovieManager;
-import easv.intgrpmovie.dal.DBConnection;
 import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,19 +11,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -35,8 +30,11 @@ public class MyMoviesController implements Initializable {
     @FXML
     private ListView<String> lstViewcategory; // Middle ListView (categories)
 
+    //@FXML
+    //private ListView<String> lstViewMovie; // Right ListView (media files)
+
     @FXML
-    private ListView<String> lstViewMovie; // Right ListView (media files)
+    private ListView<Movie> lstViewMovie;
 
     @FXML
     private ComboBox<String> genreComboBox; // Not used for now
@@ -49,8 +47,6 @@ public class MyMoviesController implements Initializable {
         this.catMovieManager = new CatMovieManager(); // Initialize the manager here
     }
 
-    // Path to the media folder (relative path from project root)
-    private final String mediaPath = "media";
 
     // Button to open Add Movie dialog
     public void btnaddMovie(ActionEvent actionEvent) {
@@ -99,19 +95,55 @@ public class MyMoviesController implements Initializable {
         });
 
         lstViewMain.getItems().addAll("Movie");
+
+        lstViewMovie.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Double-click detected
+                Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+                if (selectedMovie != null) {
+                    openMoviePlayer(selectedMovie);
+                }
+            }
+        });
+    }
+
+    private void openMoviePlayer(Movie selectedMovie) {
+        try {
+            // Load the FXML file for the media player view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/intgrpmovie/mediaDisplay.fxml"));
+
+            if (loader.getLocation() == null) {
+                System.out.println("FXML file location is not set.");
+            } else {
+                System.out.println("FXML file loaded successfully.");
+            }
+
+            Parent root = loader.load();
+
+            // Get the controller for the new FXML file
+            MediaDisplayController controller = loader.getController();
+            controller.setMovie(selectedMovie); // Pass the selected movie to the controller
+
+            // Create a new scene and set it to the stage
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) lstViewMovie.getScene().getWindow(); // Assuming you're using the same window
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateMediaList(String categoryName) {
         // Fetch the list of movies from the CatMovieManager
-        List<String> movieDetails = catMovieManager.getMoviesByCategory(categoryName);
+        List<Movie> movies = catMovieManager.getMoviesByCategory(categoryName); // Ensure this returns List<Movie>
 
-        // Update the ListView in the UI with the fetched movie details
-        ObservableList<String> observableList = FXCollections.observableArrayList(movieDetails);
+        // Update the ListView with Movie objects
+        ObservableList<Movie> observableList = FXCollections.observableArrayList(movies);
         lstViewMovie.setItems(observableList);
 
-        // If no movies were found for the category, display a default message
-        if (movieDetails.isEmpty()) {
-            lstViewMovie.getItems().add("No media files found for " + categoryName);
+        // Handle the case where no movies are found
+        if (movies.isEmpty()) {
+            lstViewMovie.getItems().add(new Movie(0, "No media files found for " + categoryName, 0, "", ""));
         }
     }
 }

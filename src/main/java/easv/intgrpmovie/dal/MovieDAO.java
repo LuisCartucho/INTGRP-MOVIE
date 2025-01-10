@@ -59,9 +59,9 @@ public class MovieDAO {
             stmnt.executeUpdate();
         }
     }
-    public List<String> getMoviesByCategory(String categoryName) {
-        List<String> movieDetails = new ArrayList<>();
-        String query = "SELECT m.name, m.rating " +
+    public List<Movie> getMoviesByCategory(String categoryName) {
+        List<Movie> movieDetails = new ArrayList<>();
+        String query = "SELECT m.id, m.name, m.rating, m.fileLink, m.lastView " +
                 "FROM Movie m " +
                 "JOIN CatMovie cm ON m.id = cm.MovieId " +
                 "JOIN Category c ON c.id = cm.CategoryId " +
@@ -74,9 +74,15 @@ public class MovieDAO {
             ResultSet resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 double rating = resultSet.getDouble("rating");
-                movieDetails.add(name + " (Rating: " + rating + ")");
+                String fileLink = resultSet.getString("fileLink");
+                String lastView = resultSet.getString("lastView");
+
+                // Create a Movie object and add it to the list
+                Movie movie = new Movie(id, name, rating, fileLink, lastView);
+                movieDetails.add(movie);
             }
         } catch (SQLException e) {
             e.printStackTrace();

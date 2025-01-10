@@ -3,11 +3,11 @@ package easv.intgrpmovie.be;
 public class Movie {
     private int ID;
     private String name;
-    private int rating;
+    private double rating;
     private String fileLink;
     private String lastView;
 
-    public Movie(int ID, String name, int rating, String fileLink, String lastView) {
+    public Movie(int ID, String name, double rating, String fileLink, String lastView) {
         this.ID = ID;
         this.name = name;
         this.rating = rating;
@@ -31,7 +31,7 @@ public class Movie {
         this.name = name;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 

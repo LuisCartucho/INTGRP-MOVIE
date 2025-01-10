@@ -14,7 +14,7 @@ public class MovieManager {
         return movies;
     }
 
-    public List<String> getMoviesByCategory(String categoryName) {
+    public List<Movie> getMoviesByCategory(String categoryName) {
         return movieDAO.getMoviesByCategory(categoryName);
     }
 }
