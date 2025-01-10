@@ -1,5 +1,6 @@
 package easv.intgrpmovie.gui.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +42,14 @@ public class MoviePlayerController {
         } else {
             System.out.println("No media files found in: " + mediaFolderPath);
         }
+
+        // Bind MediaView size to stage size
+        Platform.runLater(() -> {
+            Stage stage = (Stage) mediaView.getScene().getWindow();
+            mediaView.fitWidthProperty().bind(stage.widthProperty());
+            mediaView.fitHeightProperty().bind(stage.heightProperty());
+            mediaView.setPreserveRatio(true);
+        });
     }
 
     private String[] findMediaFiles(String folderPath) {
