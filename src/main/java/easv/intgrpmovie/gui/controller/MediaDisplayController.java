@@ -24,6 +24,7 @@ public class MediaDisplayController {
     private boolean isPlaying = false;
     private int currentMediaIndex = 0;
     private String[] mediaFiles;
+
     @FXML
     public void initialize() {
         // Load media files when the controller is initialized
@@ -35,6 +36,7 @@ public class MediaDisplayController {
             System.out.println("No media files found in: " + mediaFolderPath);
         }
     }
+
     private String[] findMediaFiles(String folderPath) {
         List<String> mediaFileList = new ArrayList<>();
         File mediaFolder = new File(folderPath);
@@ -45,6 +47,7 @@ public class MediaDisplayController {
         }
         return mediaFileList.toArray(new String[0]);
     }
+
     private void loadMediaFiles(File folder, List<String> mediaFileList) {
         File[] files = folder.listFiles();
         if (files != null) {
@@ -57,10 +60,12 @@ public class MediaDisplayController {
             }
         }
     }
+
     private boolean isValidMediaFile(File file) {
         String fileName = file.getName().toLowerCase();
         return fileName.endsWith(".mp4") || fileName.endsWith(".avi") || fileName.endsWith(".mkv");
     }
+
     private void initializeMediaPlayer() {
         if (mediaFiles == null || mediaFiles.length == 0) {
             System.out.println("No media files to play.");
@@ -85,6 +90,7 @@ public class MediaDisplayController {
         });
         playPauseButton.setText("▶");
     }
+
     @FXML
     private void onPlayPauseButtonClicked() {
         if (mediaPlayer == null) return;
@@ -97,24 +103,28 @@ public class MediaDisplayController {
         }
         isPlaying = !isPlaying;
     }
+
     @FXML
     private void onSeekSliderReleased() {
         if (mediaPlayer != null) {
             mediaPlayer.seek(Duration.seconds(seekSlider.getValue()));
         }
     }
+
     @FXML
     private void onRewindButtonClicked() {
         if (mediaPlayer != null) {
             mediaPlayer.seek(mediaPlayer.getCurrentTime().subtract(Duration.seconds(10)));
         }
     }
+
     @FXML
     private void onFastForwardButtonClicked() {
         if (mediaPlayer != null) {
             mediaPlayer.seek(mediaPlayer.getCurrentTime().add(Duration.seconds(10)));
         }
     }
+
     @FXML
     private void onPreviousButtonClicked() {
         if (mediaPlayer != null) {
@@ -126,6 +136,7 @@ public class MediaDisplayController {
             isPlaying = true;
         }
     }
+
     @FXML
     private void onNextButtonClicked() {
         if (mediaPlayer != null) {
@@ -137,6 +148,7 @@ public class MediaDisplayController {
             isPlaying = true;
         }
     }
+
     private void updateDuration() {
         if (mediaPlayer != null) {
             Duration currentTime = mediaPlayer.getCurrentTime();
@@ -144,6 +156,7 @@ public class MediaDisplayController {
             durationLabel.setText(formatDuration(currentTime) + " / " + formatDuration(totalTime));
         }
     }
+
     private String formatDuration(Duration duration) {
         int minutes = (int) duration.toMinutes();
         int seconds = (int) (duration.toSeconds() % 60);
@@ -156,6 +169,12 @@ public class MediaDisplayController {
     public void setMovie(Movie movie) {
         this.movie = movie;
         // Add any additional logic here if necessary
+        Media media = new Media(new File(movie.getFileLink()).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaView.setMediaPlayer(mediaPlayer);
+        mediaPlayer.play();
     }
 }
+
+
 

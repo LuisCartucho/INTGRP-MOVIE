@@ -4,6 +4,7 @@ import easv.intgrpmovie.MyMoviesApplication;
 import easv.intgrpmovie.be.Category;
 import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.bll.CatMovieManager;
+import easv.intgrpmovie.bll.MovieManager;
 import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
@@ -41,6 +44,7 @@ public class MyMoviesController implements Initializable {
 
     private CategoryModel categoryModel = new CategoryModel();
     private CatMovieManager catMovieManager;
+    private MovieManager movieManager= new MovieManager();
 
     // Constructor no longer needed since FXML injection will handle it
     public MyMoviesController() {
@@ -123,11 +127,15 @@ public class MyMoviesController implements Initializable {
             MediaDisplayController controller = loader.getController();
             controller.setMovie(selectedMovie); // Pass the selected movie to the controller
 
-            // Create a new scene and set it to the stage
+            // Create a new scene for the new window
             Scene scene = new Scene(root);
-            Stage stage = (Stage) lstViewMovie.getScene().getWindow(); // Assuming you're using the same window
-            stage.setScene(scene);
-            stage.show();
+
+            // Create a new Stage (a new window)
+            Stage newStage = new Stage();
+            newStage.setTitle("Movie Player");
+            newStage.setScene(scene);
+            newStage.show(); // Show the new window
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,7 +153,45 @@ public class MyMoviesController implements Initializable {
         if (movies.isEmpty()) {
             lstViewMovie.getItems().add(new Movie(0, "No media files found for " + categoryName, 0, "", ""));
         }
+
     }
-}
+
+    @FXML
+    private void onBtnDelete() {
+        // Get the selected movie from the ListView
+        Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+
+        if (selectedMovie != null) {
+            // Get the movie ID
+            int movieId = selectedMovie.getID();
+
+            // Show a confirmation dialog
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Movie");
+            alert.setHeaderText("Are you sure you want to delete this movie?");
+            alert.setContentText("Movie ID: " + movieId);
+
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                // Call the service layer to delete the movie from the database
+                movieManager.deleteMovie(movieId);
+
+                // Refresh the movie list after deletion
+                refreshMovieList();
+            }
+        } else {
+            // If no movie is selected, show a warning
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Movie Selected");
+            alert.setHeaderText("Please select a movie to delete.");
+            alert.showAndWait();
+        }
+    }
+    private void refreshMovieList() {
+        // Code to refresh the movie list in the ListView
+        lstViewMovie.getItems().clear();
+        lstViewMovie.getItems().addAll(movieManager.getMoviesByCategory("Movie"));
+    }
+    }
+
 
 

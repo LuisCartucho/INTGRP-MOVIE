@@ -17,7 +17,13 @@ public class MovieManager {
     public List<Movie> getMoviesByCategory(String categoryName) {
         return movieDAO.getMoviesByCategory(categoryName);
     }
+
+    // Method to delete the movie from both the CatMovie and Movie tables
+    public void deleteMovie(int movieId) {
+        movieDAO.deleteMovieById(movieId);
+    }
 }
+
 
 
 

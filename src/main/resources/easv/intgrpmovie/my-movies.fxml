@@ -13,7 +13,7 @@
       <ListView fx:id="lstViewMovie" layoutX="400.0" opacity="0.65" prefHeight="288.0" prefWidth="295.0" />
       <Button fx:id="addMovie" layoutX="407.0" layoutY="301.0" mnemonicParsing="false" onAction="#btnaddMovie" text="Add" />
       <Button layoutX="468.0" layoutY="301.0" mnemonicParsing="false" onAction="#btnEditMovie" text="Edit" />
-      <Button layoutX="529.0" layoutY="301.0" mnemonicParsing="false" text="Delete" />
+      <Button layoutX="529.0" layoutY="301.0" mnemonicParsing="false" onAction="#onBtnDelete" text="Delete" />
       <Label layoutX="64.0" layoutY="263.0" text="Show all movies">
          <font>
             <Font size="10.0" />

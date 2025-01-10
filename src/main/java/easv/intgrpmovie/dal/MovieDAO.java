@@ -89,7 +89,41 @@ public class MovieDAO {
         }
         return movieDetails;
     }
-}
+
+
+
+    // SQL queries for deletion
+    private static final String DELETE_CAT_MOVIE_SQL = "DELETE FROM CatMovie WHERE MovieId = ?";
+    private static final String DELETE_MOVIE_SQL = "DELETE FROM Movie WHERE ID = ?";
+
+    public void deleteMovieById(int movieId) {
+
+        try (Connection connection = conn.getConnection()) {
+            // Begin transaction to ensure both deletes happen together
+            connection.setAutoCommit(false);
+
+            // Delete from CatMovie table
+            try (PreparedStatement stmt1 = connection.prepareStatement(DELETE_CAT_MOVIE_SQL)) {
+                stmt1.setInt(1, movieId);
+                stmt1.executeUpdate();
+                }
+
+                // Delete from Movie table
+                try (PreparedStatement stmt2 = connection.prepareStatement(DELETE_MOVIE_SQL)) {
+                    stmt2.setInt(1, movieId);
+                    stmt2.executeUpdate();
+                }
+
+                // Commit the transaction
+                connection.commit();
+                System.out.println("Movie deleted successfully.");
+            } catch (SQLException e) {
+                // Handle any errors during the delete process
+                System.err.println("Error deleting movie: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 
