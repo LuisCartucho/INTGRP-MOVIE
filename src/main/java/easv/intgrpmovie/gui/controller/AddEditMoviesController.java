@@ -180,6 +180,7 @@ public class AddEditMoviesController {
                 "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
         );
     }
+
 }
         /*
         //Example of how you might handle movie selection

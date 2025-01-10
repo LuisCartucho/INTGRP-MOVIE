@@ -14,7 +14,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -114,6 +117,38 @@ public class MyMoviesController implements Initializable {
             lstViewMovie.getItems().add("No media files found for " + categoryName);
         }
     }
-}
 
+    @FXML
+    private void handleMovieDoubleClick(MouseEvent event) {
+        if (event.getClickCount() == 2) { // Detect double-click
+            String selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+            if (selectedMovie != null) {
+                // Open the mediaDisplay.fxml
+                openMediaPlayer(selectedMovie);
+            }
+        }
+    }
+
+    private void openMediaPlayer(String movieName) {
+        try {
+            // Load the mediaDisplay FXML
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/easv/intgrpmovie/mediaDisplay.fxml"));
+            Parent root = fxmlLoader.load();
+
+            // Get the controller of the mediaDisplay FXML
+            MoviePlayerController controller = fxmlLoader.getController();
+            controller.initialize(); // Pass the movie name or path
+
+            // Create a new scene with the loaded FXML
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Media Player");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+}
 
