@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="820.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.gui.controller.MoviePlayerController">
+
+    <!-- Movie Display Area -->
+    <MediaView fx:id="mediaView" fitHeight="450.0" fitWidth="800.0" layoutX="10.0" layoutY="10.0" preserveRatio="true" />
+
+    <!-- Progress Slider -->
+    <Slider fx:id="seekSlider" layoutX="10.0" layoutY="470.0" onMouseReleased="#onSeekSliderReleased" prefWidth="800.0" />
+
+    <!-- Control Buttons -->
+    <Button layoutX="340.0" layoutY="495.0" onAction="#onPreviousButtonClicked" text="⏮" textAlignment="JUSTIFY" />
+    <Button fx:id="playPauseButton" layoutX="396.0" layoutY="492.0" onAction="#onPlayPauseButtonClicked" prefHeight="40.0" prefWidth="63.0" text="▶" textAlignment="JUSTIFY">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Button>
+    <Button layoutX="490.0" layoutY="495.0" onAction="#onNextButtonClicked" text="⏭" textAlignment="JUSTIFY" />
+
+    <!-- Rewind and Fast Forward Buttons -->
+    <Button layoutX="260.0" layoutY="495.0" onAction="#onRewindButtonClicked" text="⏪" textAlignment="JUSTIFY" />
+    <Button layoutX="560.0" layoutY="495.0" onAction="#onFastForwardButtonClicked" text="⏩" textAlignment="JUSTIFY" />
+
+    <!-- Volume Slider -->
+    <Slider fx:id="volumeSlider" layoutX="10.0" layoutY="530.0" max="1" min="0" prefWidth="150.0" value="0.5" />
+
+    <!-- Volume Label -->
+    <Label layoutX="170.0" layoutY="530.0" text="Volume" />
+
+    <!-- Duration Label -->
+    <Label fx:id="durationLabel" layoutX="700.0" layoutY="495.0" text="--:-- / --:--" />
+
+</AnchorPane>
