@@ -1,14 +1,12 @@
 package easv.intgrpmovie.gui.controller;
 
+import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.dal.CategoryDAO;
 import easv.intgrpmovie.dal.MovieDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -23,17 +21,17 @@ import java.time.LocalDate;
 
 public class AddEditMoviesController {
 
+
     @FXML
     private Button chooseButton, btnSave;
-
     @FXML
     private ComboBox<String> genreComboBox;
-
     @FXML
     private TextField txtFieldTitle, txtFieldRating, txtFieldFile;
 
     private MovieDAO movieDAO = new MovieDAO();
     private CategoryDAO categoryDAO = new CategoryDAO();
+
 
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("add-edit-movies.fxml"));
@@ -180,19 +178,10 @@ public class AddEditMoviesController {
                 "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
         );
     }
+
 }
-        /*
-        //Example of how you might handle movie selection
-        movieListView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Double-click to view the movie
-                Movie selectedMovie = movieListView.getSelectionModel().getSelectedItem();
-                if (selectedMovie != null) {
-                    // Call updateLastView with the movie ID
-                    updateLastView(selectedMovie.getId());
-                }
-            }
-        });
-        */
+
+
 
 
 

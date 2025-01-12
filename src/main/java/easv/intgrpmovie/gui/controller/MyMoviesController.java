@@ -5,6 +5,7 @@ import easv.intgrpmovie.be.Category;
 import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.bll.CatMovieManager;
 import easv.intgrpmovie.bll.MovieManager;
+import easv.intgrpmovie.dal.MovieDAO;
 import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +23,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,6 +45,7 @@ public class MyMoviesController implements Initializable {
     private CategoryModel categoryModel = new CategoryModel();
     private CatMovieManager catMovieManager;
     private MovieManager movieManager= new MovieManager();
+    private MovieDAO movieDAO = new MovieDAO();
 
     // Constructor no longer needed since FXML injection will handle it
     public MyMoviesController() {
@@ -101,6 +106,7 @@ public class MyMoviesController implements Initializable {
                 Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
                 if (selectedMovie != null) {
                     openMoviePlayer(selectedMovie);
+                    updateLastView(selectedMovie.getID());
                 }
             }
         });
@@ -187,7 +193,23 @@ public class MyMoviesController implements Initializable {
         lstViewMovie.getItems().clear();
         lstViewMovie.getItems().addAll(movieManager.getMoviesByCategory("Movie"));
     }
+
+    private void updateLastView(int movieId) {
+        try {
+            // Get the current date
+            Date lastViewDate = Date.valueOf(LocalDate.now());
+
+            // Call the DAO method to update the last view date
+            movieDAO.updateLastView(movieId, lastViewDate);
+
+            System.out.println("Last view date updated successfully for movie ID: " + movieId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error updating last view date: " + e.getMessage());
+        }
     }
+}
+
 
 
 
