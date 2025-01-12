@@ -69,14 +69,31 @@ public class MyMoviesController implements Initializable {
 
     // Button to open Edit Movie dialog
     public void btnEditMovie(ActionEvent actionEvent) {
+
+        Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+
+        if (selectedMovie == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Movie Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a movie to edit.");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
+            Parent root = fxmlLoader.load();
+
+            AddEditMoviesController controller = fxmlLoader.getController();
+            controller.setMovie(selectedMovie); // Pass the selected movie to the controller
+
             Stage stage = new Stage();
-            Scene scene = new Scene(fxmlLoader.load());
             stage.setTitle("Edit Movie");
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -107,10 +124,13 @@ public class MyMoviesController implements Initializable {
                 if (selectedMovie != null) {
                     openMoviePlayer(selectedMovie);
                     updateLastView(selectedMovie.getID());
+                }   else {
+                System.out.println("No movie selected!");
                 }
             }
         });
     }
+
 
     private void openMoviePlayer(Movie selectedMovie) {
         try {

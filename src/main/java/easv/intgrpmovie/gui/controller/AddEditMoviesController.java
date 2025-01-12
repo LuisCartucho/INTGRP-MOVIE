@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.List;
 
 public class AddEditMoviesController {
 
@@ -31,15 +32,16 @@ public class AddEditMoviesController {
 
     private MovieDAO movieDAO = new MovieDAO();
     private CategoryDAO categoryDAO = new CategoryDAO();
+    private Movie movie;
 
 
-    public void start(Stage stage) throws IOException {
+    /**public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("add-edit-movies.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Add/Edit Movie");
         stage.setScene(scene);
         stage.show();
-    }
+    }*/
 
     private void saveMovie() {
         // Get input values from the UI
@@ -178,6 +180,37 @@ public class AddEditMoviesController {
                 "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
         );
     }
+
+    // Method to receive the selected movie's ID
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+        loadMovieDetails(); // Load movie details from the database
+    }
+
+    // Fetch movie details from the database and populate the fields
+    private void loadMovieDetails() {
+        if (movie != null) {
+            try {
+                // Retrieve the list of all movies
+                List<Movie> movies = movieDAO.getMovie();
+
+                // Find the movie with the matching ID
+                for (Movie m : movies) {
+                    if (m.getID() == movie.getID()) {
+                        // Populate the fields with the selected movie's details
+                        txtFieldTitle.setText(m.getName());
+                        txtFieldRating.setText(String.valueOf(m.getRating()));
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Error loading movie details: " + e.getMessage());
+            }
+        }
+    }
+
+
 
 }
 

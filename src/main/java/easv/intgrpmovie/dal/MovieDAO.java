@@ -59,6 +59,7 @@ public class MovieDAO {
             stmnt.executeUpdate();
         }
     }
+
     public List<Movie> getMoviesByCategory(String categoryName) {
         List<Movie> movieDetails = new ArrayList<>();
         String query = "SELECT m.id, m.name, m.rating, m.fileLink, m.lastView " +
@@ -104,24 +105,25 @@ public class MovieDAO {
             try (PreparedStatement stmt1 = connection.prepareStatement(DELETE_CAT_MOVIE_SQL)) {
                 stmt1.setInt(1, movieId);
                 stmt1.executeUpdate();
-                }
-
-                // Delete from Movie table
-                try (PreparedStatement stmt2 = connection.prepareStatement(DELETE_MOVIE_SQL)) {
-                    stmt2.setInt(1, movieId);
-                    stmt2.executeUpdate();
-                }
-
-                // Commit the transaction
-                connection.commit();
-                System.out.println("Movie deleted successfully.");
-            } catch (SQLException e) {
-                // Handle any errors during the delete process
-                System.err.println("Error deleting movie: " + e.getMessage());
-                e.printStackTrace();
             }
+
+            // Delete from Movie table
+            try (PreparedStatement stmt2 = connection.prepareStatement(DELETE_MOVIE_SQL)) {
+                stmt2.setInt(1, movieId);
+                stmt2.executeUpdate();
+            }
+
+            // Commit the transaction
+            connection.commit();
+            System.out.println("Movie deleted successfully.");
+        } catch (SQLException e) {
+            // Handle any errors during the delete process
+            System.err.println("Error deleting movie: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+}
+
 
 
 
