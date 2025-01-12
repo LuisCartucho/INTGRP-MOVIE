@@ -29,16 +29,12 @@ public class MyMoviesController implements Initializable {
 
     @FXML
     private ListView<String> lstViewMain; // Left ListView (categories)
-
     @FXML
     private ListView<String> lstViewcategory; // Middle ListView (categories)
-
     //@FXML
     //private ListView<String> lstViewMovie; // Right ListView (media files)
-
     @FXML
     private ListView<Movie> lstViewMovie;
-
     @FXML
     private ComboBox<String> genreComboBox; // Not used for now
 

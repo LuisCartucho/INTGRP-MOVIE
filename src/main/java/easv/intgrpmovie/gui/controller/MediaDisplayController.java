@@ -1,5 +1,7 @@
 package easv.intgrpmovie.gui.controller;
+
 import easv.intgrpmovie.be.Movie;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,10 +10,14 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MediaDisplayController {
+
     @FXML
     private MediaView mediaView;
     @FXML
@@ -20,6 +26,7 @@ public class MediaDisplayController {
     private Button playPauseButton;
     @FXML
     private Label durationLabel;
+
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false;
     private int currentMediaIndex = 0;
@@ -30,26 +37,37 @@ public class MediaDisplayController {
         // Load media files when the controller is initialized
         String mediaFolderPath = "C:\\Users\\luisc\\OneDrive\\Ambiente de Trabalho\\School Programmes\\IntelIJ Folder\\INTGRP-MOVIE\\media";
         mediaFiles = findMediaFiles(mediaFolderPath);
+
         if (mediaFiles.length > 0) {
             initializeMediaPlayer();
         } else {
             System.out.println("No media files found in: " + mediaFolderPath);
         }
+        // Bind MediaView size to stage size
+        Platform.runLater(() -> {
+            Stage stage = (Stage) mediaView.getScene().getWindow();
+            mediaView.fitWidthProperty().bind(stage.widthProperty());
+            mediaView.fitHeightProperty().bind(stage.heightProperty());
+            mediaView.setPreserveRatio(true);
+        });
     }
 
     private String[] findMediaFiles(String folderPath) {
         List<String> mediaFileList = new ArrayList<>();
         File mediaFolder = new File(folderPath);
+
         if (mediaFolder.exists() && mediaFolder.isDirectory()) {
             loadMediaFiles(mediaFolder, mediaFileList);
         } else {
             System.out.println("Media folder not found: " + folderPath);
         }
+
         return mediaFileList.toArray(new String[0]);
     }
 
     private void loadMediaFiles(File folder, List<String> mediaFileList) {
         File[] files = folder.listFiles();
+
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
@@ -71,9 +89,11 @@ public class MediaDisplayController {
             System.out.println("No media files to play.");
             return;
         }
+
         Media media = new Media(mediaFiles[currentMediaIndex]);
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
+
         mediaPlayer.setOnReady(() -> {
             seekSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
             mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
@@ -81,19 +101,23 @@ public class MediaDisplayController {
                 updateDuration();
             });
         });
+
         mediaPlayer.setOnEndOfMedia(() -> onNextButtonClicked());
+
         volumeSlider.setValue(0.5); // Default volume
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (mediaPlayer != null) {
                 mediaPlayer.setVolume(newValue.doubleValue());
             }
         });
+
         playPauseButton.setText("▶");
     }
 
     @FXML
     private void onPlayPauseButtonClicked() {
         if (mediaPlayer == null) return;
+
         if (isPlaying) {
             mediaPlayer.pause();
             playPauseButton.setText("▶");
@@ -174,7 +198,8 @@ public class MediaDisplayController {
         mediaView.setMediaPlayer(mediaPlayer);
         mediaPlayer.play();
     }
-}
+    }
+
 
 
 

@@ -91,8 +91,6 @@ public class MovieDAO {
     }
 
 
-
-    // SQL queries for deletion
     private static final String DELETE_CAT_MOVIE_SQL = "DELETE FROM CatMovie WHERE MovieId = ?";
     private static final String DELETE_MOVIE_SQL = "DELETE FROM Movie WHERE ID = ?";
 
