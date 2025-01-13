@@ -1,8 +1,10 @@
 package easv.intgrpmovie.gui.controller;
 
+import easv.intgrpmovie.be.Category;
 import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.dal.CategoryDAO;
 import easv.intgrpmovie.dal.MovieDAO;
+import easv.intgrpmovie.gui.model.CategoryModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,11 +24,17 @@ import java.util.List;
 
 public class AddEditMoviesController {
 
+    private CategoryModel categoryModel = new CategoryModel();
+
+    @FXML
+    private ListView  lstViewCatMovie;
 
     @FXML
     private Button chooseButton, btnSave;
+
     @FXML
     private ComboBox<String> genreComboBox;
+
     @FXML
     private TextField txtFieldTitle, txtFieldRating, txtFieldFile;
 
@@ -176,9 +184,14 @@ public class AddEditMoviesController {
     @FXML
     public void initialize() {
         btnSave.setOnAction(event -> saveMovie());
-        genreComboBox.getItems().addAll(
-                "Action", "Animation", "Comedy", "Crime", "Drama", "Film-noir", "Horror", "Thriller", "War", "Western"
-        );
+
+        List<Category> categories = categoryModel.getCategory();
+
+        // Populate the ListView with category names
+        for (Category cat : categories) {
+            lstViewCatMovie.getItems().add(cat.getName());
+            lstViewCatMovie.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        }
     }
 
     // Method to receive the selected movie's ID
@@ -200,6 +213,7 @@ public class AddEditMoviesController {
                         // Populate the fields with the selected movie's details
                         txtFieldTitle.setText(m.getName());
                         txtFieldRating.setText(String.valueOf(m.getRating()));
+                        txtFieldFile.setText(m.getFileLink());
                         break;
                     }
                 }
