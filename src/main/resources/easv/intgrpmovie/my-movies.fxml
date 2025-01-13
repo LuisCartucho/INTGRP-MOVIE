@@ -10,10 +10,12 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="695.0" styleClass="mainWindow" stylesheets="@View/Style.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.gui.controller.MyMoviesController">
    <children>
-      <Label layoutX="443.0" layoutY="24.0" text="Search title:" textFill="WHITE" />
-      <TextField fx:id="txtMovieTitle" layoutX="510.0" layoutY="20.0" prefHeight="25.0" prefWidth="160.0" promptText="Enter a movie title" />
-      <Label layoutX="468.0" layoutY="53.0" text="Rating:" textFill="WHITE" />
-      <Slider fx:id="ratingSlider" layoutX="510.0" layoutY="55.0" prefHeight="14.0" prefWidth="160.0" />
+      <Label layoutX="423.0" layoutY="19.0" text="Search title:" textFill="WHITE" />
+      <TextField fx:id="txtMovieTitle" layoutX="490.0" layoutY="15.0" prefHeight="25.0" prefWidth="160.0" promptText="Enter a movie title" />
+      <Label layoutX="423.0" layoutY="48.0" text="Min. rating:" textFill="WHITE" />
+      <Label fx:id="ratingLabel" layoutX="489.0" layoutY="48.0" text="0" textFill="WHITE" />
+      <Slider fx:id="ratingSlider" blockIncrement="0.1" layoutX="510.0" layoutY="50.0" max="10" min="0" prefHeight="14.0" prefWidth="120.0" />
+      <Label fx:id="ratingLabel1" layoutX="637.0" layoutY="48.0" text="10" textFill="WHITE" />
       <ListView fx:id="lstMain" layoutY="105.0" opacity="0.65" prefHeight="288.0" prefWidth="200.0" />
       <Label layoutX="65.0" layoutY="370.0" text="Show all movies">
          <font>

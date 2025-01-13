@@ -8,6 +8,7 @@ import easv.intgrpmovie.bll.MovieManager;
 import easv.intgrpmovie.dal.MovieDAO;
 import easv.intgrpmovie.gui.model.CategoryModel;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,7 +36,9 @@ public class MyMoviesController implements Initializable {
     @FXML private ListView<String> lstCategory; // Category List View
     @FXML private ListView<Movie> lstMovie; // Movie List View
     @FXML private ComboBox<String> genreComboBox;
-    @FXML private TextField txtMovieTitle; // TextField for movie title search
+    @FXML private TextField txtMovieTitle; // Text Field for movie title search
+    @FXML private Slider ratingSlider; // Minimum rating Slider
+    @FXML private Label ratingLabel;
 
     private List<Movie> movies = new ArrayList<>();
     private CategoryModel categoryModel = new CategoryModel();
@@ -111,8 +114,16 @@ public class MyMoviesController implements Initializable {
 
         // Initialize Filter functionality
         txtMovieTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            //System.out.println("Text changed to: " + newValue); // Debugging line
             filterMovies(newValue);
         });
+
+        // Add listener for rating slider
+        ratingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filterMoviesByRating(newValue.doubleValue()); // Filter based on slider value
+        });
+
+        ratingLabel.textProperty().bind(Bindings.format("%.1f", ratingSlider.valueProperty()));
 
         lstMovie.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Double-click detected
@@ -167,6 +178,9 @@ public class MyMoviesController implements Initializable {
         ObservableList<Movie> observableList = FXCollections.observableArrayList(fetchedMovies);
         lstMovie.setItems(observableList);
 
+        // Apply filtering (by title and rating) after updating the movies list
+        filterMovies(txtMovieTitle.getText()); // This will call filterMovies and apply both filters
+
         // Handle the case where no movies are found
         if (fetchedMovies.isEmpty()) {
             lstMovie.getItems().add(new Movie(0, "No media files found for " + categoryName, 0, "", ""));
@@ -174,18 +188,31 @@ public class MyMoviesController implements Initializable {
     }
 
     private void filterMovies(String filterText) {
-        // If the filter text is empty, show all songs
+        double minRating = ratingSlider.getValue(); // Get the minimum rating from the slider
+
+        // If the filter text is empty, show all movies
         if (filterText == null || filterText.isEmpty()) {
-            lstMovie.setItems(FXCollections.observableList(movies));
+            filterMoviesByRating(minRating); // Filter by rating only
         } else {
-            // Filter movie based on the title
+            // Filter movies by both title and rating
             List<Movie> filteredMovies = movies.stream()
-                    .filter(movie -> movie.getName().toLowerCase().contains(filterText.toLowerCase()))
+                    .filter(movie -> movie.getName().toLowerCase().contains(filterText.toLowerCase())
+                            && movie.getRating() >= minRating)
                     .collect(Collectors.toList());
 
             // Update the ListView with the filtered list
             lstMovie.setItems(FXCollections.observableList(filteredMovies));
         }
+    }
+
+    private void filterMoviesByRating(double minRating) {
+        // Filter movies based on the rating (minRating) from the slider
+        List<Movie> filteredMovies = movies.stream()
+                .filter(movie -> movie.getRating() >= minRating)
+                .collect(Collectors.toList());
+
+        // Update the ListView with the filtered list
+        lstMovie.setItems(FXCollections.observableList(filteredMovies));
     }
 
     @FXML
