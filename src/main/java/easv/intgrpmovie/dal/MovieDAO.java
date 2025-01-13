@@ -70,18 +70,14 @@ public class MovieDAO {
 
         try (Connection connection = conn.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-
             stmt.setString(1, categoryName);
             ResultSet resultSet = stmt.executeQuery();
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 double rating = resultSet.getDouble("rating");
                 String fileLink = resultSet.getString("fileLink");
                 String lastView = resultSet.getString("lastView");
-
-                // Create a Movie object and add it to the list
                 Movie movie = new Movie(id, name, rating, fileLink, lastView);
                 movieDetails.add(movie);
             }
@@ -91,39 +87,29 @@ public class MovieDAO {
         return movieDetails;
     }
 
-
     private static final String DELETE_CAT_MOVIE_SQL = "DELETE FROM CatMovie WHERE MovieId = ?";
+
     private static final String DELETE_MOVIE_SQL = "DELETE FROM Movie WHERE ID = ?";
 
     public void deleteMovieById(int movieId) {
-
         try (Connection connection = conn.getConnection()) {
-            // Begin transaction to ensure both deletes happen together
-            connection.setAutoCommit(false);
-
+            connection.setAutoCommit(false); // Begin transaction to ensure both deletes happen together
             // Delete from CatMovie table
             try (PreparedStatement stmt1 = connection.prepareStatement(DELETE_CAT_MOVIE_SQL)) {
                 stmt1.setInt(1, movieId);
                 stmt1.executeUpdate();
             }
-
             // Delete from Movie table
             try (PreparedStatement stmt2 = connection.prepareStatement(DELETE_MOVIE_SQL)) {
                 stmt2.setInt(1, movieId);
                 stmt2.executeUpdate();
             }
-
             // Commit the transaction
             connection.commit();
             System.out.println("Movie deleted successfully.");
         } catch (SQLException e) {
-            // Handle any errors during the delete process
-            System.err.println("Error deleting movie: " + e.getMessage());
+            System.err.println("Error deleting movie: " + e.getMessage()); // Handle any errors during the delete process
             e.printStackTrace();
         }
     }
 }
-
-
-
-

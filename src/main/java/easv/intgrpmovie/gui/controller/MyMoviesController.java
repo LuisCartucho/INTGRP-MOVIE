@@ -7,6 +7,7 @@ import easv.intgrpmovie.bll.CatMovieManager;
 import easv.intgrpmovie.bll.MovieManager;
 import easv.intgrpmovie.dal.MovieDAO;
 import easv.intgrpmovie.gui.model.CategoryModel;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,10 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,22 +24,20 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MyMoviesController implements Initializable {
 
-    @FXML
-    private ListView<String> lstViewMain; // Left ListView (categories)
-    @FXML
-    private ListView<String> lstViewcategory; // Middle ListView (categories)
-    //@FXML
-    //private ListView<String> lstViewMovie; // Right ListView (media files)
-    @FXML
-    private ListView<Movie> lstViewMovie;
-    @FXML
-    private ComboBox<String> genreComboBox; // Not used for now
+    @FXML private ListView<String> lstMain;
+    @FXML private ListView<String> lstCategory; // Category List View
+    @FXML private ListView<Movie> lstMovie; // Movie List View
+    @FXML private ComboBox<String> genreComboBox;
+    @FXML private TextField txtMovieTitle; // TextField for movie title search
 
+    private List<Movie> movies = new ArrayList<>();
     private CategoryModel categoryModel = new CategoryModel();
     private CatMovieManager catMovieManager;
     private MovieManager movieManager= new MovieManager();
@@ -49,12 +45,11 @@ public class MyMoviesController implements Initializable {
 
     // Constructor no longer needed since FXML injection will handle it
     public MyMoviesController() {
-        this.catMovieManager = new CatMovieManager(); // Initialize the manager here
+        this.catMovieManager = new CatMovieManager();
     }
 
-
-    // Button to open Add Movie dialog
-    public void btnaddMovie(ActionEvent actionEvent) {
+    // Add Movie button handle
+    public void btnAddMovie(ActionEvent actionEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
             Stage stage = new Stage();
@@ -67,10 +62,10 @@ public class MyMoviesController implements Initializable {
         }
     }
 
-    // Button to open Edit Movie dialog
+    // Edit Movie button handle
     public void btnEditMovie(ActionEvent actionEvent) {
 
-        Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+        Movie selectedMovie = lstMovie.getSelectionModel().getSelectedItem();
 
         if (selectedMovie == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -80,7 +75,6 @@ public class MyMoviesController implements Initializable {
             alert.showAndWait();
             return;
         }
-
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
             Parent root = fxmlLoader.load();
@@ -100,27 +94,29 @@ public class MyMoviesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Add movie categories to the middle ListView
-        // Fetch categories from the model
         List<Category> categories = categoryModel.getCategory();
-
-        // Populate the ListView with category names
+        // Populate the Category List View
         for (Category cat : categories) {
-            lstViewcategory.getItems().add(cat.getName());
+            lstCategory.getItems().add(cat.getName());
         }
 
         // Set up listener for category selection
-        lstViewcategory.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        lstCategory.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 updateMediaList(newValue); // Update right ListView when a category is selected
             }
         });
 
-        lstViewMain.getItems().addAll("Movie");
+        lstMain.getItems().addAll("Movie");
 
-        lstViewMovie.setOnMouseClicked(event -> {
+        // Initialize Filter functionality
+        txtMovieTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterMovies(newValue);
+        });
+
+        lstMovie.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Double-click detected
-                Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+                Movie selectedMovie = lstMovie.getSelectionModel().getSelectedItem();
                 if (selectedMovie != null) {
                     openMoviePlayer(selectedMovie);
                     updateLastView(selectedMovie.getID());
@@ -130,7 +126,6 @@ public class MyMoviesController implements Initializable {
             }
         });
     }
-
 
     private void openMoviePlayer(Movie selectedMovie) {
         try {
@@ -142,7 +137,6 @@ public class MyMoviesController implements Initializable {
             } else {
                 System.out.println("FXML file loaded successfully.");
             }
-
             Parent root = loader.load();
 
             // Get the controller for the new FXML file
@@ -157,7 +151,6 @@ public class MyMoviesController implements Initializable {
             newStage.setTitle("Movie Player");
             newStage.setScene(scene);
             newStage.show(); // Show the new window
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,23 +158,40 @@ public class MyMoviesController implements Initializable {
 
     public void updateMediaList(String categoryName) {
         // Fetch the list of movies from the CatMovieManager
-        List<Movie> movies = catMovieManager.getMoviesByCategory(categoryName); // Ensure this returns List<Movie>
+        List<Movie> fetchedMovies = catMovieManager.getMoviesByCategory(categoryName); // Ensure this returns List<Movie>
+
+        // Update the movies list
+        movies = fetchedMovies; // Store the fetched movies
 
         // Update the ListView with Movie objects
-        ObservableList<Movie> observableList = FXCollections.observableArrayList(movies);
-        lstViewMovie.setItems(observableList);
+        ObservableList<Movie> observableList = FXCollections.observableArrayList(fetchedMovies);
+        lstMovie.setItems(observableList);
 
         // Handle the case where no movies are found
-        if (movies.isEmpty()) {
-            lstViewMovie.getItems().add(new Movie(0, "No media files found for " + categoryName, 0, "", ""));
+        if (fetchedMovies.isEmpty()) {
+            lstMovie.getItems().add(new Movie(0, "No media files found for " + categoryName, 0, "", ""));
         }
+    }
 
+    private void filterMovies(String filterText) {
+        // If the filter text is empty, show all songs
+        if (filterText == null || filterText.isEmpty()) {
+            lstMovie.setItems(FXCollections.observableList(movies));
+        } else {
+            // Filter movie based on the title
+            List<Movie> filteredMovies = movies.stream()
+                    .filter(movie -> movie.getName().toLowerCase().contains(filterText.toLowerCase()))
+                    .collect(Collectors.toList());
+
+            // Update the ListView with the filtered list
+            lstMovie.setItems(FXCollections.observableList(filteredMovies));
+        }
     }
 
     @FXML
-    private void onBtnDelete() {
+    private void btnDeleteMovie() {
         // Get the selected movie from the ListView
-        Movie selectedMovie = lstViewMovie.getSelectionModel().getSelectedItem();
+        Movie selectedMovie = lstMovie.getSelectionModel().getSelectedItem();
 
         if (selectedMovie != null) {
             // Get the movie ID
@@ -208,10 +218,11 @@ public class MyMoviesController implements Initializable {
             alert.showAndWait();
         }
     }
+
     private void refreshMovieList() {
         // Code to refresh the movie list in the ListView
-        lstViewMovie.getItems().clear();
-        lstViewMovie.getItems().addAll(movieManager.getMoviesByCategory("Movie"));
+        lstMovie.getItems().clear();
+        lstMovie.getItems().addAll(movieManager.getMoviesByCategory("Movie"));
     }
 
     private void updateLastView(int movieId) {
@@ -229,7 +240,3 @@ public class MyMoviesController implements Initializable {
         }
     }
 }
-
-
-
-
