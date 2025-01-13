@@ -1,4 +1,5 @@
 package easv.intgrpmovie.gui.controller;
+
 import easv.intgrpmovie.be.Movie;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,10 +9,13 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MediaDisplayController {
+
     @FXML
     private MediaView mediaView;
     @FXML
@@ -20,6 +24,7 @@ public class MediaDisplayController {
     private Button playPauseButton;
     @FXML
     private Label durationLabel;
+
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false;
     private int currentMediaIndex = 0;
@@ -30,8 +35,9 @@ public class MediaDisplayController {
         // Set default size for the MediaView
         mediaView.setFitWidth(800);
         mediaView.setFitHeight(650);
+
         // Load media files when the controller is initialized
-        String mediaFolderPath = "media/bee.mp4";
+        String mediaFolderPath = "media/";
         mediaFiles = findMediaFiles(mediaFolderPath);
         if (mediaFiles.length > 0) {
             initializeMediaPlayer();
@@ -42,12 +48,8 @@ public class MediaDisplayController {
         // Add resize listener to make the video fullscreen when the window is maximized
         mediaView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
-                newScene.widthProperty().addListener((o, oldWidth, newWidth) -> {
-                    mediaView.setFitWidth(newWidth.doubleValue());
-                });
-                newScene.heightProperty().addListener((o, oldHeight, newHeight) -> {
-                    mediaView.setFitHeight(newHeight.doubleValue());
-                });
+                newScene.widthProperty().addListener((o, oldWidth, newWidth) -> mediaView.setFitWidth(newWidth.doubleValue()));
+                newScene.heightProperty().addListener((o, oldHeight, newHeight) -> mediaView.setFitHeight(newHeight.doubleValue()));
             }
         });
     }
@@ -86,24 +88,56 @@ public class MediaDisplayController {
             System.out.println("No media files to play.");
             return;
         }
+        // Stop any existing MediaPlayer before creating a new one
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+        }
+
         Media media = new Media(mediaFiles[currentMediaIndex]);
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
+
+        // Set up the MediaPlayer listeners
         mediaPlayer.setOnReady(() -> {
-            seekSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
-            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-                seekSlider.setValue(newValue.toSeconds());
-                updateDuration();
-            });
+            Duration totalDuration = mediaPlayer.getMedia().getDuration();
+            seekSlider.setMax(totalDuration.toSeconds());
+            updateDuration();
         });
-        mediaPlayer.setOnEndOfMedia(() -> onNextButtonClicked());
-        volumeSlider.setValue(0.5); // Default volume
+
+        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            if (!seekSlider.isValueChanging()) {
+                seekSlider.setValue(newValue.toSeconds());
+            }
+            updateDuration();
+        });
+
+        mediaPlayer.setOnEndOfMedia(this::onNextButtonClicked);
+
+        // Configure the volume slider
+        volumeSlider.setValue(mediaPlayer.getVolume() * 100); // Convert to percentage
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            mediaPlayer.setVolume(newValue.doubleValue() / 100); // Convert back to 0-1 range
+        });
+
+        // Configure the seek slider
+        seekSlider.setOnMousePressed(event -> {
             if (mediaPlayer != null) {
-                mediaPlayer.setVolume(newValue.doubleValue());
+                mediaPlayer.pause();
             }
         });
+
+        seekSlider.setOnMouseReleased(event -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.seek(Duration.seconds(seekSlider.getValue()));
+                mediaPlayer.play();
+            }
+        });
+
         playPauseButton.setText("▶");
+        mediaPlayer.play();
+        isPlaying = true;
+        playPauseButton.setText("⏸");
     }
 
     @FXML
@@ -146,9 +180,6 @@ public class MediaDisplayController {
             mediaPlayer.stop();
             currentMediaIndex = (currentMediaIndex - 1 + mediaFiles.length) % mediaFiles.length;
             initializeMediaPlayer();
-            mediaPlayer.play();
-            playPauseButton.setText("⏸");
-            isPlaying = true;
         }
     }
 
@@ -158,9 +189,6 @@ public class MediaDisplayController {
             mediaPlayer.stop();
             currentMediaIndex = (currentMediaIndex + 1) % mediaFiles.length;
             initializeMediaPlayer();
-            mediaPlayer.play();
-            playPauseButton.setText("⏸");
-            isPlaying = true;
         }
     }
 
@@ -168,7 +196,11 @@ public class MediaDisplayController {
         if (mediaPlayer != null) {
             Duration currentTime = mediaPlayer.getCurrentTime();
             Duration totalTime = mediaPlayer.getTotalDuration();
-            durationLabel.setText(formatDuration(currentTime) + " / " + formatDuration(totalTime));
+            if (totalTime != null && !totalTime.isUnknown()) {
+                durationLabel.setText(formatDuration(currentTime) + " / " + formatDuration(totalTime));
+            } else {
+                durationLabel.setText(formatDuration(currentTime) + " / --:--");
+            }
         }
     }
 
@@ -178,15 +210,13 @@ public class MediaDisplayController {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-    private Movie movie;  // Class variable to hold the movie object
+    private Movie movie;
 
-    // Define the setMovie method to set the movie
     public void setMovie(Movie movie) {
         this.movie = movie;
-        // Add any additional logic here if necessary
         Media media = new Media(new File(movie.getFileLink()).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
         mediaPlayer.play();
-}
+    }
 }
