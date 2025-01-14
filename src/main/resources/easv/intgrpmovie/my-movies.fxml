@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="695.0" styleClass="mainWindow" stylesheets="@View/Style.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.gui.controller.MyMoviesController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="695.0" styleClass="mainWindow" stylesheets="@View/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.intgrpmovie.gui.controller.MyMoviesController">
    <children>
       <Label layoutX="423.0" layoutY="19.0" text="Search title:" textFill="WHITE" />
       <TextField fx:id="txtMovieTitle" layoutX="490.0" layoutY="15.0" prefHeight="25.0" prefWidth="160.0" promptText="Enter a movie title" />
@@ -29,5 +29,6 @@
       <Button layoutX="400.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnAddMovie" prefHeight="25.0" prefWidth="50.0" text="Add Movie" />
       <Button layoutX="455.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnEditMovie" prefHeight="25.0" prefWidth="50.0" text="Edit Movie" />
       <Button layoutX="510.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnDeleteMovie" prefHeight="25.0" prefWidth="50.0" text="Delete Movie" />
+      <Button layoutX="248.0" layoutY="395.0" mnemonicParsing="false" onAction="#onBtnNewCategory" text="New Category" />
    </children>
 </AnchorPane>

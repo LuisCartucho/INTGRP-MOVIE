@@ -97,4 +97,16 @@ public class CategoryDAO {
             stmnt.executeUpdate();
         }
     }
+
+    public boolean insertCategory(String categoryName) {
+        String query = "INSERT INTO Category (name) VALUES (?)";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(query)) {
+            stmnt.setString(1, categoryName);
+            return stmnt.executeUpdate() > 0; // Returns true if a row was inserted
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

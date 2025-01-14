@@ -1,0 +1,9 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="easv.intgrpmovie.gui.controller.NewCategoryController" alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150">
+    <Label text="Enter New Category:" />
+    <TextField fx:id="txtFieldNewCategory" promptText="Category Name" />
+    <Button text="Save" onAction="#onSaveCategory" />
+</VBox>

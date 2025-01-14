@@ -5,6 +5,7 @@ import easv.intgrpmovie.be.Category;
 import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.bll.CatMovieManager;
 import easv.intgrpmovie.bll.MovieManager;
+import easv.intgrpmovie.dal.CategoryDAO;
 import easv.intgrpmovie.dal.MovieDAO;
 import easv.intgrpmovie.gui.model.CategoryModel;
 
@@ -46,6 +47,7 @@ public class MyMoviesController implements Initializable {
     private CatMovieManager catMovieManager;
     private MovieManager movieManager= new MovieManager();
     private MovieDAO movieDAO = new MovieDAO();
+    private CategoryDAO categoryDAO = new CategoryDAO();
 
 
     // Constructor no longer needed since FXML injection will handle it
@@ -277,5 +279,33 @@ public class MyMoviesController implements Initializable {
             e.printStackTrace();
             System.err.println("Error updating last view date: " + e.getMessage());
         }
+    }
+
+    public void onBtnNewCategory(ActionEvent actionEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/easv/intgrpmovie/NewCategory.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Add New Category");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL); // Makes it modal
+            stage.showAndWait();
+
+            // Optionally, refresh the categories list after the new category is added
+            refreshCategoriesList();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not open the Add New Category window");
+            alert.setContentText("An unexpected error occurred: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+    private void refreshCategoriesList() {
+        List<String> categories = categoryDAO.getCategoryNames();
+        lstCategory.getItems().setAll(categories);
     }
 }
