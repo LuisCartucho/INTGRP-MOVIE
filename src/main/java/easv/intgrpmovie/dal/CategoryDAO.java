@@ -109,4 +109,60 @@ public class CategoryDAO {
             return false;
         }
     }
+
+    public void deleteCategory(int categoryId) {
+        // First, delete all rows in the CatMovie table that reference this category
+        String deleteMoviesQuery = "DELETE FROM CatMovie WHERE CategoryId = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(deleteMoviesQuery)) {
+
+            stmnt.setInt(1, categoryId);
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Now, delete the category itself
+        String deleteCategoryQuery = "DELETE FROM Category WHERE id = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(deleteCategoryQuery)) {
+
+            stmnt.setInt(1, categoryId);
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getCategoryIdByName(String categoryName) {
+        String query = "SELECT id FROM Category WHERE name = ?";
+        int categoryId = -1;  // Default to -1 if not found
+
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)){
+
+            stmt.setString(1, categoryName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    categoryId = rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categoryId;
+    }
+
+    public void deleteMoviesByCategoryId(int categoryId) {
+        String query = "DELETE FROM Movie WHERE CategoryId = ?";
+
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(query)) {
+
+            stmnt.setInt(1, categoryId);
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

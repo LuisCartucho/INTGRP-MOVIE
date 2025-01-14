@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,6 @@ public class MyMoviesController implements Initializable {
     @FXML private ListView<String> lstMain;
     @FXML private ListView<String> lstCategory; // Category List View
     @FXML private ListView<Movie> lstMovie; // Movie List View
-    @FXML private ComboBox<String> genreComboBox;
     @FXML private TextField txtMovieTitle; // Text Field for movie title search
     @FXML private Slider ratingSlider; // Minimum rating Slider
     @FXML private Label ratingLabel;
@@ -307,5 +307,37 @@ public class MyMoviesController implements Initializable {
     private void refreshCategoriesList() {
         List<String> categories = categoryDAO.getCategoryNames();
         lstCategory.getItems().setAll(categories);
+    }
+    @FXML
+    private void onDeleteCategory() {
+        String selectedCategory = lstCategory.getSelectionModel().getSelectedItem();
+
+        if (selectedCategory != null) {
+            // Show confirmation dialog
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Category");
+            alert.setHeaderText("Are you sure you want to delete this category?");
+            alert.setContentText("This action cannot be undone.");
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Query the database to get the category ID based on the category name
+                int categoryId = categoryDAO.getCategoryIdByName(selectedCategory);
+
+                // Now pass the category ID to the delete method (which also deletes associated movies)
+                categoryDAO.deleteCategory(categoryId);
+                refreshCategoriesList();  // Refresh the categories list after deletion
+            }
+        } else {
+            showError("No category selected.");
+        }
+    }
+
+    // Helper method to show error messages
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 }

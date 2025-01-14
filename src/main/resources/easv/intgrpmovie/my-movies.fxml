@@ -29,6 +29,7 @@
       <Button layoutX="400.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnAddMovie" prefHeight="25.0" prefWidth="50.0" text="Add Movie" />
       <Button layoutX="455.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnEditMovie" prefHeight="25.0" prefWidth="50.0" text="Edit Movie" />
       <Button layoutX="510.0" layoutY="395.0" mnemonicParsing="false" onAction="#btnDeleteMovie" prefHeight="25.0" prefWidth="50.0" text="Delete Movie" />
-      <Button layoutX="248.0" layoutY="395.0" mnemonicParsing="false" onAction="#onBtnNewCategory" text="New Category" />
+      <Button layoutX="254.0" layoutY="408.0" mnemonicParsing="false" onAction="#onBtnNewCategory" text="New Category" />
+      <Button layoutX="249.0" layoutY="448.0" mnemonicParsing="false" onAction="#onDeleteCategory" text="Delete Category" />
    </children>
 </AnchorPane>
