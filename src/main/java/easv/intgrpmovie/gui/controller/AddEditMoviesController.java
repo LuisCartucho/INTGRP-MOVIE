@@ -5,12 +5,10 @@ import easv.intgrpmovie.be.Movie;
 import easv.intgrpmovie.dal.CategoryDAO;
 import easv.intgrpmovie.dal.MovieDAO;
 import easv.intgrpmovie.gui.model.CategoryModel;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,38 +16,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class AddEditMoviesController {
 
-    private CategoryModel categoryModel = new CategoryModel();
+    private final CategoryModel categoryModel = new CategoryModel();
 
     @FXML
-    private ListView  lstViewCatMovie;
+    private ListView<String> lstViewCatMovie;
 
     @FXML
     private Button chooseButton, btnSave;
 
     @FXML
-    private ComboBox<String> genreComboBox;
-
-    @FXML
     private TextField txtFieldTitle, txtFieldRating, txtFieldFile;
 
-    private MovieDAO movieDAO = new MovieDAO();
-    private CategoryDAO categoryDAO = new CategoryDAO();
+    private final MovieDAO movieDAO = new MovieDAO();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
     private Movie movie;
-
-
-    /**public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("add-edit-movies.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Add/Edit Movie");
-        stage.setScene(scene);
-        stage.show();
-    }*/
 
     private void saveMovie() {
         // Get input values from the UI
@@ -80,10 +67,10 @@ public class AddEditMoviesController {
             return;
         }
 
-        // Get the selected category from the ComboBox
-        String selectedCategory = genreComboBox.getValue();
-        if (selectedCategory == null) {
-            showError("Please select a category.");
+        // Get all selected categories from the ListView
+        ObservableList<String> selectedCategories = lstViewCatMovie.getSelectionModel().getSelectedItems();
+        if (selectedCategories.isEmpty()) {
+            showError("Please select at least one category.");
             return;
         }
 
@@ -122,15 +109,17 @@ public class AddEditMoviesController {
             int movieId = movieDAO.insertMovie(title, rating, targetFile.toString(), Date.valueOf(lastView));
 
             if (movieId != -1) {
-                // Get categoryId
-                int categoryId = categoryDAO.getCategoryId(selectedCategory);
-                if (categoryId != -1) {
-                    // Insert relationship between movie and category
-                    categoryDAO.insertMovieCategory(movieId, categoryId);
-                    System.out.println("Movie and category saved successfully!");
-                } else {
-                    showError("Invalid category selected.");
+                for (String category : selectedCategories) {
+                    // Get categoryId for each selected category
+                    int categoryId = categoryDAO.getCategoryId(category);
+                    if (categoryId != -1) {
+                        // Insert relationship between movie and each category
+                        categoryDAO.insertMovieCategory(movieId, categoryId);
+                    } else {
+                        showError("Invalid category: " + category);
+                    }
                 }
+                showSuccess("Movie and categories saved successfully!");
             } else {
                 showError("Error saving movie.");
             }
@@ -190,27 +179,21 @@ public class AddEditMoviesController {
         // Populate the ListView with category names
         for (Category cat : categories) {
             lstViewCatMovie.getItems().add(cat.getName());
-            lstViewCatMovie.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
+        lstViewCatMovie.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
-    // Method to receive the selected movie's ID
     public void setMovie(Movie movie) {
         this.movie = movie;
         loadMovieDetails(); // Load movie details from the database
     }
 
-    // Fetch movie details from the database and populate the fields
     private void loadMovieDetails() {
         if (movie != null) {
             try {
-                // Retrieve the list of all movies
                 List<Movie> movies = movieDAO.getMovie();
-
-                // Find the movie with the matching ID
                 for (Movie m : movies) {
                     if (m.getID() == movie.getID()) {
-                        // Populate the fields with the selected movie's details
                         txtFieldTitle.setText(m.getName());
                         txtFieldRating.setText(String.valueOf(m.getRating()));
                         txtFieldFile.setText(m.getFileLink());
@@ -223,12 +206,4 @@ public class AddEditMoviesController {
             }
         }
     }
-
-
-
 }
-
-
-
-
-

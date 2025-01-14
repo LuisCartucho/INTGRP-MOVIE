@@ -31,8 +31,8 @@ public class Movie {
         this.name = name;
     }
 
-    public double getRating() {
-        return rating;
+    public int getRating() {
+        return (int) rating;
     }
 
     public void setRating(int rating) {

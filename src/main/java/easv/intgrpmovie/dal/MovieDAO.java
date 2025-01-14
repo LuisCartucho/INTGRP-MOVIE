@@ -112,4 +112,19 @@ public class MovieDAO {
             e.printStackTrace();
         }
     }
+
+    public boolean updateMovie(Movie movie) {
+        String query = "UPDATE Movie SET name = ?, rating = ? WHERE id = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, movie.getName());
+            statement.setInt(2, movie.getRating());
+            statement.setInt(3, movie.getID()); // Ensure the ID is passed correctly
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

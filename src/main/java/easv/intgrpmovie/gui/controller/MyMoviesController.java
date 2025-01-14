@@ -18,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class MyMoviesController implements Initializable {
     private MovieManager movieManager= new MovieManager();
     private MovieDAO movieDAO = new MovieDAO();
 
+
     // Constructor no longer needed since FXML injection will handle it
     public MyMoviesController() {
         this.catMovieManager = new CatMovieManager();
@@ -65,9 +67,7 @@ public class MyMoviesController implements Initializable {
         }
     }
 
-    // Edit Movie button handle
     public void btnEditMovie(ActionEvent actionEvent) {
-
         Movie selectedMovie = lstMovie.getSelectionModel().getSelectedItem();
 
         if (selectedMovie == null) {
@@ -78,22 +78,34 @@ public class MyMoviesController implements Initializable {
             alert.showAndWait();
             return;
         }
+
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("add-edit-movies.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(MyMoviesApplication.class.getResource("EditMovies.fxml"));
             Parent root = fxmlLoader.load();
 
-            AddEditMoviesController controller = fxmlLoader.getController();
-            controller.setMovie(selectedMovie); // Pass the selected movie to the controller
+            EditController controller = fxmlLoader.getController();
+            controller.setMovie(selectedMovie);
 
             Stage stage = new Stage();
             stage.setTitle("Edit Movie");
             stage.setScene(new Scene(root));
-            stage.show();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not open the Edit Movie window");
+            alert.setContentText("An unexpected error occurred: " + e.getMessage());
+            alert.showAndWait();
         }
     }
+
+
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
