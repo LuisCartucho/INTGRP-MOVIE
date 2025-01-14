@@ -54,7 +54,6 @@ public class CategoryDAO {
     }
 
 
-
     public List<String> getCategoryNames() {
         List<String> categoryNames = new ArrayList<>();
         String query = "SELECT name FROM Category";
@@ -71,5 +70,31 @@ public class CategoryDAO {
         }
         return categoryNames;
     }
-}
 
+    public List<String> getCategoriesForMovie(int movieId) {
+        List<String> categories = new ArrayList<>();
+        String query = "SELECT c.name FROM Category c " +
+                "JOIN CatMovie cm ON c.id = cm.categoryId " +
+                "WHERE cm.movieId = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(query)) {
+            stmnt.setInt(1, movieId);
+            ResultSet rs = stmnt.executeQuery();
+            while (rs.next()) {
+                categories.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
+    public void deleteMovieCategories(int movieId) throws SQLException {
+        String deleteQuery = "DELETE FROM CatMovie WHERE movieId = ?";
+        try (Connection connection = conn.getConnection();
+             PreparedStatement stmnt = connection.prepareStatement(deleteQuery)) {
+            stmnt.setInt(1, movieId);
+            stmnt.executeUpdate();
+        }
+    }
+}
